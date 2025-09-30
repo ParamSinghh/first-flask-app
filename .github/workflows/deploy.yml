@@ -1,0 +1,51 @@
+name: Deploy Flask App to AWS ECS
+
+on:
+  push:
+    branches:
+      - main      # runs on push to main branch
+  workflow_dispatch:  # allows manual trigger
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Log in to AWS ECR
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          region: eu-north-1
+
+      # Step 4: Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t flask-app .
+
+      # Step 5: Tag Docker image for ECR
+      - name: Tag Docker image
+        run: |
+          docker tag flask-app:latest 881010748559.dkr.ecr.eu-north-1.amazonaws.com/flask-app:latest
+
+      # Step 6: Push Docker image to ECR
+      - name: Push Docker image
+        run: |
+          docker push 881010748559.dkr.ecr.eu-north-1.amazonaws.com/flask-app:latest
+
+      # Step 7: Update ECS service
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          cluster: flask-cluster        # your ECS cluster name
+          service: flask-service        # your ECS service name
+          task-definition: flask-task   # your ECS task definition
+          wait-for-service-stability: true
+          region: eu-north-1
