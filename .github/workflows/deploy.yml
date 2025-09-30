@@ -48,7 +48,7 @@ jobs:
         with:
           cluster: nocturnal-gecko-g17en2        # your ECS cluster name
           service: flask-service        # your ECS service name
-          task-definition: flask-task   # your ECS task definition
+          task-definition: flask-task.json   # your ECS task definition
           wait-for-service-stability: true
         env:
           AWS_REGION: eu-north-1
