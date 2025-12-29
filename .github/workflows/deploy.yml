@@ -3,54 +3,72 @@ name: Deploy Flask App to AWS ECS
 on:
   push:
     branches:
-      - main      # runs on push to main branch
-  workflow_dispatch:  # allows manual trigger
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: eu-north-1
+  ECR_REPOSITORY: flask-app
+  ECS_CLUSTER: nocturnal-gecko-g17en2
+  ECS_SERVICE: flask-service
+  CONTAINER_NAME: flask-app
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repo
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set up Docker
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      # Step 2: Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      # Step 3: Log in to AWS ECR
-      - name: Login to ECR
+      # Step 3: Login to Amazon ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      # Step 4: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push image
+        id: build-image
         env:
-          AWS_REGION: eu-north-1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-      # Step 4: Build Docker image
-      - name: Build Docker image
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t flask-app .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      # Step 5: Tag Docker image for ECR
-      - name: Tag Docker image
+      # Step 5: Download current task definition
+      - name: Download task definition
         run: |
-          docker tag flask-app:latest 881010748559.dkr.ecr.eu-north-1.amazonaws.com/flask-app:latest
+          aws ecs describe-task-definition \
+            --task-definition flask-task \
+            --query taskDefinition > task-definition.json
 
-      # Step 6: Push Docker image to ECR
-      - name: Push Docker image
-        run: |
-          docker push 881010748559.dkr.ecr.eu-north-1.amazonaws.com/flask-app:latest
+      # Step 6: Update task definition with new image
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
-      # Step 7: Update ECS service
-      - name: Deploy to ECS
+      # Step 7: Deploy to Amazon ECS
+      - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
-          cluster: nocturnal-gecko-g17en2        # your ECS cluster name
-          service: flask-service        # your ECS service name
-          task-definition: flask-task.json   # your ECS task definition
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
-        env:
-          AWS_REGION: eu-north-1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
