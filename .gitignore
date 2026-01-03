@@ -4,3 +4,6 @@ new.pem
 *.tfstate
 *.tfstate.backup
 *.log
+terraform.tfstate.1767391706.backup
+terraform.tfstate.1767392577.backup
+terraform.tfstate.1767392680.backup
