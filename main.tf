@@ -1,47 +1,44 @@
-# Configure AWS
 provider "aws" {
-  region = "eu-west-2"
+  region = "eu-north-1"
 }
 
-# Security group - allows HTTP traffic
-resource "aws_security_group" "web" {
-  name = "allow-http"
-
-  ingress {
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+# Existing security group
+variable "sg_id" {
+  default = "sg-0c25cc22bda184ea6"
 }
 
-# EC2 instance with web server
-resource "aws_instance" "web" {
-  ami           = "ami-0b9932f4918a00c4f"
-  instance_type = "t2.micro"
-  
-  vpc_security_group_ids = [aws_security_group.web.id]
+# EC2 instance with Flask app
+resource "aws_instance" "TerraformDemoInstance" {
+  ami           = "ami-074211ec8e88502be" # Amazon Linux 2 AMI
+  instance_type = "t3.micro"
+  key_name      = "new"  # your key pair name
+
+  vpc_security_group_ids = [var.sg_id]
 
   user_data = <<-EOF
               #!/bin/bash
-              yum install -y httpd
-              systemctl start httpd
-              echo "<h1>Hello from Terraform!</h1>" > /var/www/html/index.html
+              sudo yum update -y
+              sudo yum install -y python3 python3-pip
+              pip3 install flask
+
+              cat << 'APP' > /home/ec2-user/app.py
+              ${file("app.py")}
+              APP
+
+              chmod +x /home/ec2-user/app.py
+              nohup python3 /home/ec2-user/app.py > app.log 2>&1 &
               EOF
 
   tags = {
-    Name = "terraform-web-server"
+    Name = "TerraformDemoInstance"
   }
 }
 
-# Output the web URL
+
+
+# Output URL for Flask
 output "website_url" {
-  value = "http://${aws_instance.web.public_ip}"
-} 
+  value = "http://${aws_instance.TerraformDemoInstance.public_ip}:5000"
+}
+
+
