@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Time Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .inline-group {
+            display: flex;
+            gap: 10px;
+        }
+        .inline-group input {
+            flex: 2;
+        }
+        .inline-group select {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Reading Time Calculator</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="total_pages">Total Number of Pages:</label>
+                <input type="number" id="total_pages" name="total_pages" required min="1">
+            </div>
+            
+            <div class="form-group">
+                <label for="pages_read">How Many Pages Can You Read:</label>
+                <input type="number" id="pages_read" name="pages_read" required min="1">
+            </div>
+            
+            <div class="form-group">
+                <label>In How Much Time:</label>
+                <div class="inline-group">
+                    <input type="number" id="time_value" name="time_value" required min="1">
+                    <select id="time_unit" name="time_unit">
+                        <option value="minutes">Minutes</option>
+                        <option value="hours" selected>Hours</option>
+                        <option value="days">Days</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="start_date">Start Date:</label>
+                <input type="date" id="start_date" name="start_date" required>
+            </div>
+            
+            <button type="submit">Calculate Reading Time</button>
+        </form>
+    </div>
+    
+    <script>
+        // Set today's date as default
+        document.getElementById('start_date').valueAsDate = new Date();
+    </script>
+</body>
+</html>

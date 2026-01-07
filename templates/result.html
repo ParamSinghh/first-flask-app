@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reading Time Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .result-item {
+            background-color: #f9f9f9;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4CAF50;
+            border-radius: 5px;
+        }
+        .result-item strong {
+            color: #4CAF50;
+            font-size: 24px;
+        }
+        .result-label {
+            color: #666;
+            font-size: 14px;
+        }
+        .finish-date {
+            background-color: #e3f2fd;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #2196F3;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .finish-date h2 {
+            color: #1976D2;
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .finish-date .date {
+            color: #2196F3;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .date-range {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .back-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #2196F3;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .back-button:hover {
+            background-color: #0b7dda;
+        }
+        .summary {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⏱️ Your Reading Time</h1>
+        <div class="summary">
+            To read <strong>{{ total_pages }}</strong> pages, it will take:
+        </div>
+        
+        <div class="result-item">
+            <div class="result-label">Hours</div>
+            <strong>{{ hours }}</strong> hours
+        </div>
+        
+        <div class="result-item">
+            <div class="result-label">Days</div>
+            <strong>{{ days }}</strong> days
+        </div>
+        
+        <div class="result-item">
+            <div class="result-label">Weeks</div>
+            <strong>{{ weeks }}</strong> weeks
+        </div>
+        
+        <div class="result-item">
+            <div class="result-label">Months</div>
+            <strong>{{ months }}</strong> months
+        </div>
+        
+        <div class="result-item">
+            <div class="result-label">Years</div>
+            <strong>{{ years }}</strong> years
+        </div>
+        
+        <div class="finish-date">
+            <h2>📅 You'll Finish On:</h2>
+            <div class="date">{{ finish_date }}</div>
+            <div class="date-range">Starting from {{ start_date }}</div>
+        </div>
+        
+        <a href="/" class="back-button">Calculate Again</a>
+    </div>
+</body>
+</html>
