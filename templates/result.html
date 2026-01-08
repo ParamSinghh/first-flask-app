@@ -60,6 +60,16 @@
             font-size: 14px;
             margin-top: 10px;
         }
+        .sessions-info {
+            background-color: #fff3e0;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #FF9800;
+            border-radius: 5px;
+        }
+        .sessions-info strong {
+            color: #F57C00;
+        }
         .back-button {
             display: block;
             width: 100%;
@@ -84,13 +94,18 @@
 </head>
 <body>
     <div class="container">
-        <h1>⏱️ Your Reading Time</h1>
+        <h1>⏱️ Your Reading Plan</h1>
         <div class="summary">
-            To read <strong>{{ total_pages }}</strong> pages, it will take:
+            To read <strong>{{ total_pages }}</strong> pages:
+        </div>
+        
+        <div class="sessions-info">
+            <strong>📖 {{ total_sessions }}</strong> reading sessions needed<br>
+            <small>At {{ sessions_per_week }} sessions per week</small>
         </div>
         
         <div class="result-item">
-            <div class="result-label">Hours</div>
+            <div class="result-label">Total Reading Hours</div>
             <strong>{{ hours }}</strong> hours
         </div>
         

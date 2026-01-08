@@ -71,24 +71,29 @@
         <form method="POST">
             <div class="form-group">
                 <label for="total_pages">Total Number of Pages:</label>
-                <input type="number" id="total_pages" name="total_pages" required min="1">
+                <input type="number" id="total_pages" name="total_pages" required min="1" placeholder="e.g., 300">
             </div>
             
             <div class="form-group">
-                <label for="pages_read">How Many Pages Can You Read:</label>
-                <input type="number" id="pages_read" name="pages_read" required min="1">
+                <label for="pages_per_session">Pages You Can Read Per Session:</label>
+                <input type="number" id="pages_per_session" name="pages_per_session" required min="1" placeholder="e.g., 20">
             </div>
             
             <div class="form-group">
-                <label>In How Much Time:</label>
+                <label>How Long is Each Reading Session:</label>
                 <div class="inline-group">
-                    <input type="number" id="time_value" name="time_value" required min="1">
+                    <input type="number" id="session_duration" name="session_duration" required min="1" placeholder="e.g., 30">
                     <select id="time_unit" name="time_unit">
-                        <option value="minutes">Minutes</option>
-                        <option value="hours" selected>Hours</option>
-                        <option value="days">Days</option>
+                        <option value="minutes" selected>Minutes</option>
+                        <option value="hours">Hours</option>
                     </select>
                 </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="sessions_per_week">Reading Sessions Per Week:</label>
+                <input type="number" id="sessions_per_week" name="sessions_per_week" required min="1" max="7" placeholder="e.g., 5">
+                <small style="color: #666;">How many times per week will you read?</small>
             </div>
             
             <div class="form-group">
